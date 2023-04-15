@@ -58,7 +58,7 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: app-deployment
   namespace: web
 spec:
   replicas: 2
@@ -110,6 +110,7 @@ spec:
       targetPort: 80
   type: LoadBalancer
 
+
   ```
  
  2.
@@ -118,7 +119,7 @@ spec:
   ```
   #File redis_deployment content
    ```
-   apiVersion: v1
+ apiVersion: v1
 kind: Namespace
 metadata:
   name: data
@@ -126,7 +127,7 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
+  name: redis-deployment
   namespace: data
 spec:
   replicas: 1
@@ -156,19 +157,20 @@ spec:
       - name: redis-data
         persistentVolumeClaim:
           claimName: redis-pvc
+      restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis
+  name: redis-service
   namespace: data
 spec:
   selector:
     app: redis
   ports:
-    - protocol: TCP
-      port: 12346
-      targetPort: 12345
+  - protocol: TCP
+    port: 12346
+    targetPort: 12345
   type: ClusterIP
 ---
 apiVersion: v1
@@ -178,7 +180,7 @@ metadata:
   namespace: data
 spec:
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
@@ -189,9 +191,8 @@ kind: Secret
 metadata:
   name: redis-secret
   namespace: data
-type: Opaque
 data:
-  redis-password: <BASE64_ENCODED_PASSWORD>
+  redis-password: UWFpc3MuMTg3MTMxMw==
 
 ```
 
