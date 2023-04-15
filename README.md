@@ -254,12 +254,8 @@ spec:
   kubectl -n web get services
   kubectl -n data get services
   ```
-#4th Once all the components are up and running, you can access the app using the external IP provided by the LoadBalancer:
-  
-  ```
-  kubectl -n web get services app-service
-  ```
-regarding the hint ((for redis service url, how can you access services on other namespaces without leaving the cluster)):
+
+regarding the hint: (hint for redis service url, how can you access services on other namespaces without leaving the cluster?):
 
   In the provided manifests, I utilized the Kubernetes internal DNS to access the Redis service in the "data" namespace from the "web" namespace without        leaving the cluster. The internal DNS follows the format (service-name).(namespace).svc.cluster.local.
   
