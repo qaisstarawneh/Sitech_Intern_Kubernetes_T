@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: health
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: health-checker
+  namespace: health
+spec:
+  selector:
+    matchLabels:
+      app: health-checker
+  template:
+    metadata:
+      labels:
+        app: health-checker
+    spec:
+      containers:
+      - name: health-checker
+        image: health:latest
+        env:
+        - name: CHECK_LIST
+          value: "app-service.web.svc.cluster.local,TCP,80@redis.data.svc.cluster.local,TCP,12346"
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      hostNetwork: true

@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+name: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: app-deployment
+namespace: web
+spec:
+replicas: 2
+selector:
+  matchLabels:
+    app: app
+template:
+  metadata:
+    labels:
+      app: app
+  spec:
+    containers:
+    - name: app
+      image: app:latest
+      env:
+      - name: NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+      - name: REDIS_HOST
+        value: "redis.data.svc.cluster.local"
+      - name: REDIS_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: redis-secret
+            key: redis-password
+      ports:
+      - containerPort: 80
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 80
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+name: app-service
+namespace: web
+spec:
+selector:
+  app: app
+ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+type: LoadBalancer
+
